@@ -31,6 +31,7 @@ const current = document.querySelector('.subway__current');
 const after = document.querySelector('.subway__after');
 const lists = document.querySelector('.subway__lists');
 const alert = document.querySelector('.subway__alert');
+const logo = document.querySelector('.search__logo');
 
 // 데이터 가져오기
 function loadData() {
@@ -49,8 +50,8 @@ function createHTMLString(data) {
   return `
   <li class="subway__list invisible" data-line_num="${data.line_num}" data-station_cd="${data.station_cd}"
   data-station_nm="${data.station_nm}" data-fr_code="${data.fr_code}">
-        <span class="list__line" data-line_num="${data.line_num}">${data.line_num}</span>
-        <span class="list__name" data-line_num="${data.line_num}"> ${data.station_nm}</span>
+        <span class="list__line" data-line_num="${data.line_num}" data-station_cd="${data.station_cd}">${data.line_num}</span>
+        <span class="list__name" data-line_num="${data.line_num}" data-station_cd="${data.station_cd}"> ${data.station_nm}</span>
       </li>
   `;
 }
@@ -65,6 +66,15 @@ function displaySub(name, allList) {
       list.classList.add('invisible');
     }
   });
+}
+
+function isRight(arrayAllList) {
+  if (arrayAllList.every((list) => list.classList.contains('invisible'))) {
+    current.innerHTML = `
+  <span class="current__name">다시 입력해주세요</span>
+`;
+    return;
+  }
 }
 
 // 역 검색
@@ -86,15 +96,83 @@ function searchSub(datas) {
   const allList = document.querySelectorAll('.subway__list');
   displaySub(name, allList);
 
+  // 잘못된 역 입력 시
+  const arrayAllList = Array.from(allList);
+  isRight(arrayAllList);
+
   // 같은 역 필터링, 라인 번호만 배열로 전달, 색 변경
   const inputSub = datas.filter((sub) => sub.station_nm === name);
   const lineNum = inputSub.map((sub) => sub.line_num);
-  changeColor(lineNum[0]);
+  const stationCd = inputSub[0].station_cd;
 
+  changeColor(lineNum[0]);
+  beforeAfter(stationCd, allList);
   input.value = '';
   input.focus();
 }
 
+// 앞, 뒤 역 출력
+function beforeAfter(stationCd, allList) {
+  const cdParse = parseInt(stationCd);
+  const beforeNum = cdParse < 1000 ? `0${cdParse - 1}` : `${cdParse - 1}`;
+  const afterNum = cdParse < 1000 ? `0${cdParse + 1}` : `${cdParse + 1}`;
+  const ba = Array.from(allList);
+  const result = ba.filter(
+    (list) =>
+      list.dataset.station_cd === beforeNum ||
+      list.dataset.station_cd === afterNum
+  );
+  if (result.length === 2) {
+    before.innerHTML = `
+    <span class="before__name">${result[0].dataset.station_nm}</span>
+  `;
+    after.innerHTML = `
+    <span class="after__name">${result[1].dataset.station_nm}</span>
+  `;
+  } else {
+    before.innerHTML = `
+    <span class="before__name">${result[0].dataset.station_nm}</span>
+  `;
+    after.innerHTML = `
+    <span class="after__name"></span>
+  `;
+  }
+}
+
+function beforeAfter(stationCd) {
+  const allList = document.querySelectorAll('.subway__list');
+  const cdParse = parseInt(stationCd);
+  const beforeNum = cdParse < 1000 ? `0${cdParse - 1}` : `${cdParse - 1}`;
+  const afterNum = cdParse < 1000 ? `0${cdParse + 1}` : `${cdParse + 1}`;
+
+  console.log(stationCd);
+  console.log(beforeNum);
+  console.log(afterNum);
+  const ba = Array.from(allList);
+  const result = ba.filter(
+    (list) =>
+      list.dataset.station_cd === beforeNum ||
+      list.dataset.station_cd === afterNum
+  );
+
+  if (result.length === 2) {
+    before.innerHTML = `
+    <span class="before__name">${result[0].dataset.station_nm}</span>
+  `;
+    after.innerHTML = `
+    <span class="after__name">${result[1].dataset.station_nm}</span>
+  `;
+  } else {
+    before.innerHTML = `
+    <span class="before__name">${result[0].dataset.station_nm}</span>
+  `;
+    after.innerHTML = `
+    <span class="after__name"></span>
+  `;
+  }
+}
+
+// 리스트 선택 표시
 function selectList(target) {
   const allList = document.querySelectorAll('.subway__list');
   allList.forEach((list) => {
@@ -104,6 +182,18 @@ function selectList(target) {
       list.classList.remove('selected');
     }
   });
+}
+
+// 로고 누르면 리스트 리셋
+function resetList() {
+  const allList = document.querySelectorAll('.subway__list');
+  allList.forEach((list) => {
+    list.classList.add('invisible');
+  });
+  alert.classList.remove('invisible');
+  current.innerHTML = `
+  <span class="current__name">역을 검색해주세요</span>
+`;
 }
 
 // 라인 번호 받아서 색 변경
@@ -126,6 +216,10 @@ function setEventListeners(datas) {
     const target = e.target;
     changeColor(target.dataset.line_num);
     selectList(target);
+    beforeAfter(target.dataset.station_cd);
+  });
+  logo.addEventListener('click', () => {
+    resetList();
   });
 }
 
