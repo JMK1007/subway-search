@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/9e91bdc3ca.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="main.js" defer></script>
+    <title>Subway</title>
+  </head>
+  <body>
+    <section class="section">
+      <div class="search">
+        <input
+          type="text"
+          class="search__input"
+          placeholder="역 이름을 검색하세요"
+        />
+        <button class="search__button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div class="subway">
+        <div class="subway__before">
+          <span class="before__name"></span>
+        </div>
+        <div class="subway__current">
+          <span class="current__name">역을 검색해주세요</span>
+        </div>
+        <div class="subway__after">
+          <span class="after__name"></span>
+        </div>
+      </div>
+      <div class="lists__container">
+        <div class="subway__alert">
+          역 이름만 입력해주세요. <br />
+          정확하지 않을 시 조회가 되지 않습니다. <br />
+          Ex. 강남(O) 강남역(X)
+        </div>
+        <ul class="subway__lists"></ul>
+      </div>
+    </section>
+  </body>
+</html>
